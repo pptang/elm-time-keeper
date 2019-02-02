@@ -11,15 +11,17 @@ import Time
 
 
 type alias Model =
-    { zone : Time.Zone
-    , time : Time.Posix
+    { time : Int
+    , targetTime : Int
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model Time.utc (Time.millisToPosix 0)
-    , Task.perform AdjustTimeZone Time.here
+    ( { time = 0
+      , targetTime = 10 * 60 * 1000
+      }
+    , Cmd.none
     )
 
 
@@ -29,19 +31,13 @@ init _ =
 
 type Msg
     = Tick Time.Posix
-    | AdjustTimeZone Time.Zone
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Tick newTime ->
-            ( { model | time = newTime }
-            , Cmd.none
-            )
-
-        AdjustTimeZone newZone ->
-            ( { model | zone = newZone }
+        Tick _ ->
+            ( { model | time = model.time + 1000 }
             , Cmd.none
             )
 
@@ -63,13 +59,13 @@ view : Model -> Document Msg
 view model =
     let
         hour =
-            String.fromInt (Time.toHour model.zone model.time)
+            String.fromInt (Time.toHour Time.utc (Time.millisToPosix (model.targetTime - model.time)))
 
         minute =
-            String.fromInt (Time.toMinute model.zone model.time)
+            String.fromInt (Time.toMinute Time.utc (Time.millisToPosix (model.targetTime - model.time)))
 
         second =
-            String.fromInt (Time.toSecond model.zone model.time)
+            String.fromInt (Time.toSecond Time.utc (Time.millisToPosix (model.targetTime - model.time)))
     in
     { title = "Elm Time Keeper"
     , body = [ viewTimer hour minute second ]
