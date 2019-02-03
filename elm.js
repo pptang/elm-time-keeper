@@ -4356,6 +4356,15 @@ function _Browser_load(url)
 		}
 	}));
 }
+var elm$core$Basics$False = {$: 'False'};
+var elm$core$Basics$True = {$: 'True'};
+var elm$core$Result$isOk = function (result) {
+	if (result.$ === 'Ok') {
+		return true;
+	} else {
+		return false;
+	}
+};
 var elm$core$Basics$EQ = {$: 'EQ'};
 var elm$core$Basics$GT = {$: 'GT'};
 var elm$core$Basics$LT = {$: 'LT'};
@@ -4435,16 +4444,6 @@ var elm$core$Array$foldr = F3(
 	});
 var elm$core$Array$toList = function (array) {
 	return A3(elm$core$Array$foldr, elm$core$List$cons, _List_Nil, array);
-};
-var elm$core$Basics$mul = _Basics_mul;
-var elm$core$Basics$False = {$: 'False'};
-var elm$core$Basics$True = {$: 'True'};
-var elm$core$Result$isOk = function (result) {
-	if (result.$ === 'Ok') {
-		return true;
-	} else {
-		return false;
-	}
 };
 var elm$core$Array$branchFactor = 32;
 var elm$core$Array$Array_elm_builtin = F4(
@@ -4549,6 +4548,7 @@ var elm$core$Basics$max = F2(
 	function (x, y) {
 		return (_Utils_cmp(x, y) > 0) ? x : y;
 	});
+var elm$core$Basics$mul = _Basics_mul;
 var elm$core$Basics$sub = _Basics_sub;
 var elm$core$Elm$JsArray$length = _JsArray_length;
 var elm$core$Array$builderToArray = F2(
@@ -4835,14 +4835,11 @@ var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var author$project$Main$init = function (_n0) {
 	return _Utils_Tuple2(
-		{targetTime: (10 * 60) * 1000, time: 0},
+		{content: '', targetTime: 0, time: 0},
 		elm$core$Platform$Cmd$none);
 };
 var author$project$Main$Tick = function (a) {
 	return {$: 'Tick', a: a};
-};
-var elm$core$Basics$identity = function (x) {
-	return x;
 };
 var elm$time$Time$Every = F2(
 	function (a, b) {
@@ -5300,6 +5297,9 @@ var elm$core$Task$sequence = function (tasks) {
 		elm$core$Task$succeed(_List_Nil),
 		tasks);
 };
+var elm$core$Basics$identity = function (x) {
+	return x;
+};
 var elm$time$Time$Posix = function (a) {
 	return {$: 'Posix', a: a};
 };
@@ -5358,12 +5358,41 @@ var author$project$Main$subscriptions = function (model) {
 };
 var author$project$Main$update = F2(
 	function (msg, model) {
-		return _Utils_Tuple2(
-			_Utils_update(
-				model,
-				{time: model.time + 1000}),
-			elm$core$Platform$Cmd$none);
+		switch (msg.$) {
+			case 'Tick':
+				return (!model.targetTime) ? _Utils_Tuple2(model, elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{time: model.time + 1000}),
+					elm$core$Platform$Cmd$none);
+			case 'Change':
+				var newContent = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{content: newContent}),
+					elm$core$Platform$Cmd$none);
+			default:
+				var content = msg.a;
+				if (content.$ === 'Just') {
+					var minutes = content.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{content: '', targetTime: (minutes * 60) * 1000, time: 0}),
+						elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+				}
+		}
 	});
+var author$project$Main$Change = function (a) {
+	return {$: 'Change', a: a};
+};
+var author$project$Main$Submit = function (a) {
+	return {$: 'Submit', a: a};
+};
+var elm$core$String$toInt = _String_toInt;
 var elm$json$Json$Decode$map = _Json_map1;
 var elm$json$Json$Decode$map2 = _Json_map2;
 var elm$json$Json$Decode$succeed = _Json_succeed;
@@ -5379,9 +5408,101 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 			return 3;
 	}
 };
-var elm$html$Html$h1 = _VirtualDom_node('h1');
+var elm$html$Html$button = _VirtualDom_node('button');
+var elm$html$Html$div = _VirtualDom_node('div');
+var elm$html$Html$input = _VirtualDom_node('input');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
+var elm$json$Json$Encode$string = _Json_wrap;
+var elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			elm$json$Json$Encode$string(string));
+	});
+var elm$html$Html$Attributes$placeholder = elm$html$Html$Attributes$stringProperty('placeholder');
+var elm$html$Html$Attributes$value = elm$html$Html$Attributes$stringProperty('value');
+var elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			elm$virtual_dom$VirtualDom$on,
+			event,
+			elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		elm$html$Html$Events$on,
+		'click',
+		elm$json$Json$Decode$succeed(msg));
+};
+var elm$html$Html$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
+	return {$: 'MayStopPropagation', a: a};
+};
+var elm$html$Html$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			elm$virtual_dom$VirtualDom$on,
+			event,
+			elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+	});
+var elm$json$Json$Decode$field = _Json_decodeField;
+var elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3(elm$core$List$foldr, elm$json$Json$Decode$field, decoder, fields);
+	});
+var elm$json$Json$Decode$string = _Json_decodeString;
+var elm$html$Html$Events$targetValue = A2(
+	elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'value']),
+	elm$json$Json$Decode$string);
+var elm$html$Html$Events$onInput = function (tagger) {
+	return A2(
+		elm$html$Html$Events$stopPropagationOn,
+		'input',
+		A2(
+			elm$json$Json$Decode$map,
+			elm$html$Html$Events$alwaysStop,
+			A2(elm$json$Json$Decode$map, tagger, elm$html$Html$Events$targetValue)));
+};
+var author$project$Main$viewInput = function (content) {
+	return A2(
+		elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				elm$html$Html$input,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$placeholder('Input the minutes'),
+						elm$html$Html$Attributes$value(content),
+						elm$html$Html$Events$onInput(author$project$Main$Change)
+					]),
+				_List_Nil),
+				A2(
+				elm$html$Html$button,
+				_List_fromArray(
+					[
+						elm$html$Html$Events$onClick(
+						author$project$Main$Submit(
+							elm$core$String$toInt(content)))
+					]),
+				_List_fromArray(
+					[
+						elm$html$Html$text('Start')
+					]))
+			]));
+};
+var elm$html$Html$h1 = _VirtualDom_node('h1');
 var author$project$Main$viewTimer = F3(
 	function (hour, minute, second) {
 		return A2(
@@ -5392,6 +5513,7 @@ var author$project$Main$viewTimer = F3(
 					elm$html$Html$text(hour + (':' + (minute + (':' + second))))
 				]));
 	});
+var elm$core$String$length = _String_length;
 var elm$core$Basics$modBy = _Basics_modBy;
 var elm$time$Time$flooredDiv = F2(
 	function (numerator, denominator) {
@@ -5481,10 +5603,14 @@ var author$project$Main$view = function (model) {
 			elm$time$Time$toHour,
 			elm$time$Time$utc,
 			elm$time$Time$millisToPosix(model.targetTime - model.time)));
+	var formatSecond = (elm$core$String$length(second) === 1) ? ('0' + second) : second;
+	var formatMinute = (elm$core$String$length(minute) === 1) ? ('0' + minute) : minute;
+	var formatHour = (elm$core$String$length(hour) === 1) ? ('0' + hour) : hour;
 	return {
 		body: _List_fromArray(
 			[
-				A3(author$project$Main$viewTimer, hour, minute, second)
+				A3(author$project$Main$viewTimer, formatHour, formatMinute, formatSecond),
+				author$project$Main$viewInput(model.content)
 			]),
 		title: 'Elm Time Keeper'
 	};
@@ -5561,7 +5687,6 @@ var elm$core$Task$perform = F2(
 			elm$core$Task$Perform(
 				A2(elm$core$Task$map, toMessage, task)));
 	});
-var elm$core$String$length = _String_length;
 var elm$core$String$slice = _String_slice;
 var elm$core$String$dropLeft = F2(
 	function (n, string) {
@@ -5583,7 +5708,6 @@ var elm$core$String$left = F2(
 		return (n < 1) ? '' : A3(elm$core$String$slice, 0, n, string);
 	});
 var elm$core$String$contains = _String_contains;
-var elm$core$String$toInt = _String_toInt;
 var elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
 		return {fragment: fragment, host: host, path: path, port_: port_, protocol: protocol, query: query};
