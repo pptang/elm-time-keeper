@@ -4356,8 +4356,8 @@ function _Browser_load(url)
 		}
 	}));
 }
-var elm$core$Basics$False = {$: 'False'};
 var elm$core$Basics$True = {$: 'True'};
+var elm$core$Basics$False = {$: 'False'};
 var elm$core$Result$isOk = function (result) {
 	if (result.$ === 'Ok') {
 		return true;
@@ -4835,7 +4835,7 @@ var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var author$project$Main$init = function (_n0) {
 	return _Utils_Tuple2(
-		{content: '', targetTime: 0, time: 0},
+		{content: '', isInitial: true, targetTime: 0, time: 0},
 		elm$core$Platform$Cmd$none);
 };
 var author$project$Main$Tick = function (a) {
@@ -5360,7 +5360,11 @@ var author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 'Tick':
-				return (!model.targetTime) ? _Utils_Tuple2(model, elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+				return (!(model.targetTime - model.time)) ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{targetTime: 0, time: 0}),
+					elm$core$Platform$Cmd$none) : _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{time: model.time + 1000}),
@@ -5379,20 +5383,13 @@ var author$project$Main$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{content: '', targetTime: (minutes * 60) * 1000, time: 0}),
+							{content: '', isInitial: false, targetTime: (minutes * 60) * 1000, time: 0}),
 						elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 				}
 		}
 	});
-var author$project$Main$Change = function (a) {
-	return {$: 'Change', a: a};
-};
-var author$project$Main$Submit = function (a) {
-	return {$: 'Submit', a: a};
-};
-var elm$core$String$toInt = _String_toInt;
 var elm$json$Json$Decode$map = _Json_map1;
 var elm$json$Json$Decode$map2 = _Json_map2;
 var elm$json$Json$Decode$succeed = _Json_succeed;
@@ -5408,9 +5405,7 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 			return 3;
 	}
 };
-var elm$html$Html$button = _VirtualDom_node('button');
 var elm$html$Html$div = _VirtualDom_node('div');
-var elm$html$Html$input = _VirtualDom_node('input');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var elm$json$Json$Encode$string = _Json_wrap;
@@ -5421,6 +5416,28 @@ var elm$html$Html$Attributes$stringProperty = F2(
 			key,
 			elm$json$Json$Encode$string(string));
 	});
+var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
+var author$project$Main$viewGameOver = function (isShow) {
+	return isShow ? A2(
+		elm$html$Html$div,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('gameOver')
+			]),
+		_List_fromArray(
+			[
+				elm$html$Html$text('😛😝😜\ud83e\udd2a')
+			])) : elm$html$Html$text('');
+};
+var author$project$Main$Change = function (a) {
+	return {$: 'Change', a: a};
+};
+var author$project$Main$Submit = function (a) {
+	return {$: 'Submit', a: a};
+};
+var elm$core$String$toInt = _String_toInt;
+var elm$html$Html$button = _VirtualDom_node('button');
+var elm$html$Html$input = _VirtualDom_node('input');
 var elm$html$Html$Attributes$placeholder = elm$html$Html$Attributes$stringProperty('placeholder');
 var elm$html$Html$Attributes$value = elm$html$Html$Attributes$stringProperty('value');
 var elm$virtual_dom$VirtualDom$Normal = function (a) {
@@ -5476,7 +5493,10 @@ var elm$html$Html$Events$onInput = function (tagger) {
 var author$project$Main$viewInput = function (content) {
 	return A2(
 		elm$html$Html$div,
-		_List_Nil,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('textInput')
+			]),
 		_List_fromArray(
 			[
 				A2(
@@ -5503,14 +5523,41 @@ var author$project$Main$viewInput = function (content) {
 			]));
 };
 var elm$html$Html$h1 = _VirtualDom_node('h1');
+var elm$html$Html$p = _VirtualDom_node('p');
 var author$project$Main$viewTimer = F3(
 	function (hour, minute, second) {
 		return A2(
-			elm$html$Html$h1,
-			_List_Nil,
+			elm$html$Html$div,
 			_List_fromArray(
 				[
-					elm$html$Html$text(hour + (':' + (minute + (':' + second))))
+					elm$html$Html$Attributes$class('timer')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					elm$html$Html$div,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('circle')
+						]),
+					_List_Nil),
+					A2(
+					elm$html$Html$h1,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(hour + (':' + (minute + (':' + second))))
+						])),
+					A2(
+					elm$html$Html$p,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('itp')
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text('ITP Timer')
+						]))
 				]));
 	});
 var elm$core$String$length = _String_length;
@@ -5610,7 +5657,8 @@ var author$project$Main$view = function (model) {
 		body: _List_fromArray(
 			[
 				A3(author$project$Main$viewTimer, formatHour, formatMinute, formatSecond),
-				author$project$Main$viewInput(model.content)
+				author$project$Main$viewInput(model.content),
+				author$project$Main$viewGameOver((!(model.targetTime - model.time)) && (!model.isInitial))
 			]),
 		title: 'Elm Time Keeper'
 	};

@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 import Browser exposing (Document)
-import Html exposing (Html, button, div, h1, input, text)
+import Html exposing (Html, button, div, h1, input, p, text)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Task
@@ -17,6 +17,7 @@ type alias Model =
     { time : Int
     , targetTime : Int
     , content : String
+    , isInitial : Bool
     }
 
 
@@ -25,6 +26,7 @@ init _ =
     ( { time = 0
       , targetTime = 0
       , content = ""
+      , isInitial = True
       }
     , Cmd.none
     )
@@ -44,8 +46,8 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Tick _ ->
-            if model.targetTime == 0 then
-                ( model
+            if model.targetTime - model.time == 0 then
+                ( { model | time = 0, targetTime = 0 }
                 , Cmd.none
                 )
 
@@ -62,7 +64,7 @@ update msg model =
         Submit content ->
             case content of
                 Just minutes ->
-                    ( { model | targetTime = minutes * 60 * 1000, time = 0, content = "" }
+                    ( { model | targetTime = minutes * 60 * 1000, time = 0, content = "", isInitial = False }
                     , Cmd.none
                     )
 
@@ -123,21 +125,36 @@ view model =
     , body =
         [ viewTimer formatHour formatMinute formatSecond
         , viewInput model.content
+        , viewGameOver ((model.targetTime - model.time == 0) && (model.isInitial == False))
         ]
     }
 
 
 viewTimer : String -> String -> String -> Html Msg
 viewTimer hour minute second =
-    h1 [] [ text (hour ++ ":" ++ minute ++ ":" ++ second) ]
+    div [ class "timer" ]
+        [ div [ class "circle" ] []
+        , h1 [] [ text (hour ++ ":" ++ minute ++ ":" ++ second) ]
+        , p [ class "itp" ] [ text "ITP Timer" ]
+        ]
 
 
 viewInput : String -> Html Msg
 viewInput content =
-    div []
+    div [ class "textInput" ]
         [ input [ placeholder "Input the minutes", value content, onInput Change ] []
         , button [ onClick (Submit (String.toInt content)) ] [ text "Start" ]
         ]
+
+
+viewGameOver : Bool -> Html Msg
+viewGameOver isShow =
+    if isShow then
+        div [ class "gameOver" ]
+            [ text "😛😝😜\u{1F92A}" ]
+
+    else
+        text ""
 
 
 
