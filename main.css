@@ -1,0 +1,120 @@
+body {
+  font-family: 'Major Mono Display', monospace;
+  background: #ffffff;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+}
+.timer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 6rem;
+  color: #ffffff;
+  background: #ff0212;
+  width: 800px;
+  height: 400px;
+  margin: 100px 0;
+}
+h1 {
+  transform: rotateZ(10deg);
+  font-size: 120px;
+}
+.timer:before,
+.timer:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  border-left: 400px solid transparent;
+  border-right: 400px solid transparent;
+}
+
+.timer:before {
+  bottom: 100%;
+  border-bottom: solid 100px #ff0212;
+}
+
+.itp {
+  position: absolute;
+  left: 80px;
+  right: 0;
+  bottom: -20px;
+  margin: 0 auto;
+  font-size: 24px;
+  transform: rotateZ(13deg);
+  z-index: 2;
+}
+.circle {
+  position: absolute;
+  content: '';
+  top: -40px;
+  right: -40px;
+  width: 100px;
+  height: 100px;
+  border-radius: 100px;
+  background-color: #4DC9FF;
+}
+
+.timer:after {
+  top: 100%;
+  border-top: solid 100px #ff0212;
+}
+
+.textInput {
+  width: 30%;
+  height: 36px;
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+input {
+  flex: 3;
+  border-radius: 4px;
+  height: 100%;
+  outline: none;
+  border: solid 1px #cccccc;
+  padding: 0 10px;
+  background: #fafafa;
+}
+
+input:focus {
+  border: solid 1px #4DC9FF;
+}
+
+button {
+  flex: 1;
+  background: #ff0212;
+  color: #ffffff;
+  outline: none;
+  border: 0;
+  height: 100%;
+  border-radius: 4px;
+  margin-left: 10px;
+}
+
+button:active, button:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.gameOver {
+  position: fixed;
+  z-index: 5;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #4DC9FF;
+  color: #ffffff;
+  font-size: 120px;
+  width: 100%;
+  height: 250px;
+  transition: all 0.5s ease-in-out;
+}
